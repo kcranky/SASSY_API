@@ -10,12 +10,17 @@ class Device(models.Model):
 
 
 class Activity(models.Model):
+    """
+    An can have occur once (at an instant - i.e. only have a start time)
+    It can occur over a duration (have a start and end time)
+    """
     name = models.CharField(max_length=15, null=True)
     description = models.TextField(null=True)
     device = models.ForeignKey(Device, on_delete=SET_NULL, null=True)
-    owned_by = models.ForeignKey(User, on_delete=SET_NULL, null=True)
+    created_by = models.ForeignKey(User, on_delete=SET_NULL, null=True)
     start_time = models.DateTimeField(default=django.utils.timezone.now())
     end_time = models.DateTimeField(null=True, blank=True)
+
 
     class Meta:
         verbose_name_plural = "Activities"
