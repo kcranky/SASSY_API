@@ -2,3 +2,4 @@ venv/*
 .idea/*
 *.pyc
 *settings.py
+sassyi_api/migrations/*
