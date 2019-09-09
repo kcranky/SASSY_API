@@ -1,11 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import SET_NULL
-from django.utils import timezone
+import django
 
 
 class Device(models.Model):
     id = models.CharField(max_length=20, primary_key=True)
+    owned_by = models.ForeignKey(User, on_delete=SET_NULL, null=True)
 
 
 class Activity(models.Model):
@@ -13,7 +14,7 @@ class Activity(models.Model):
     description = models.TextField(null=True)
     device = models.ForeignKey(Device, on_delete=SET_NULL, null=True)
     owned_by = models.ForeignKey(User, on_delete=SET_NULL, null=True)
-    start_time = models.DateTimeField(default=timezone.now())
+    start_time = models.DateTimeField(default=django.utils.timezone.now())
     end_time = models.DateTimeField(null=True, blank=True)
 
     class Meta:

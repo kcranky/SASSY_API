@@ -42,7 +42,6 @@ $ sudo /etc/init.d/postgresql restart
     - Import ```settings.py``` to /SASSY_API/Sassy
     - In ```settings.py```, adjust the username and password for database access
     - Run ```$ python manage.py makemigrations```
-    - Run ```$ python manage.py migrate```
     - Run ```$ python manage.py makemigrations sassy_api```
     - Run ```$ python manage.py migrate```
     
