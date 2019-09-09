@@ -12,21 +12,21 @@ The following is required for development:
 Installation takes place in a few steps. 
 
 1) First, install Pycharm   
-```$ snap install pycharm-professional```  
+    ```$ snap install pycharm-professional```  
 2) Configure Postgres. Items in <> brackets are variables
-```
-$ sudo su - postgres  
-$ psql
-$ CREATE DATABASE sassy;
-$ CREATE USER <username> WITH PASSWORD '<password>';
-$ ALTER ROLE <username> SET client_encoding TO 'utf8';
-$ ALTER ROLE <username> SET default_transaction_isolation TO 'read committed';
-$ ALTER ROLE <username> SET timezone TO 'UTC+2';
-$ GRANT ALL PRIVILEGES ON DATABASE sassy TO <username>;
-$ \q
-$ exit
-$ sudo /etc/init.d/postgresql restart
-```
+    ```
+    $ sudo su - postgres  
+    $ psql
+    $ CREATE DATABASE sassy;
+    $ CREATE USER <username> WITH PASSWORD '<password>';
+    $ ALTER ROLE <username> SET client_encoding TO 'utf8';
+    $ ALTER ROLE <username> SET default_transaction_isolation TO 'read committed';
+    $ ALTER ROLE <username> SET timezone TO 'UTC+2';
+    $ GRANT ALL PRIVILEGES ON DATABASE sassy TO <username>;
+    $ \q
+    $ exit
+    $ sudo /etc/init.d/postgresql restart
+    ```
 3) Pull the repository:  
     Open PyCharm and select "open from repository". Enter the following URL: ```https://github.com/kcranky/SASSY_API```
     Pycharm will take a while to index the project.
@@ -50,3 +50,51 @@ $ sudo /etc/init.d/postgresql restart
     
 7) Run the server   
    You can run a local development server by using ```$ python manage.py runserver```. Navigate to ```127.0.0.1:8000/api/``` in your browser to see the server running.
+   
+## Hosting
+The API is hosted on a server.
+1) SSH in
+2) Create a virtual environment
+3) use git to clone (into the /webapps directory)
+4) Set up database as above (being sure to run migrations)
+5) The settings file is available on the server. Changes are as follows:
+    - Changes to debug (set to false)
+    - Changes to allowed hosts (set to IP of server)
+   Additions to the settings file are as follows:
+    - ```USE_X_FORWARDED_HOST = True```
+6) Set up gunicorn_cfg.py in the same directory as manage.py as follows:
+    ``` command = '/webapps/sassy/bin/gunicorn'
+    pythonpath = '/webapps/sassy/Sassy'
+    bind = '127.0.0.1:8001'
+    workers = 5
+    user = 'nobody'
+    ```
+7) Edit ```/etc/nginx/sites-available/Sassy``` with the following
+    ```
+    server {
+        listen 80;
+
+        server_name 165.22.68.223;
+
+        access_log off;
+
+        location /static/ {
+            alias /webapps/sassy/static/;
+        }
+
+        location / {
+            proxy_pass http://127.0.0.1:8001/;
+            proxy_set_header X-Forwarded-Host $server_name;
+            proxy_set_header X-Real-IP $remote_addr;
+            add_header P3P 'CP="ALL DSP COR PSAa PSDa OUR NOR ONL UNI COM NAV"';
+        }
+    }
+    ```
+8) Run the following:
+    ```
+    cd /etc/nginx/sites-enabled
+    sudo ln -s ../sites-available/Sassy
+    sudo rm default
+    sudo service nginx restart
+    ```
+9) Enter back into ```/webapps/sassy``` and run ```gunicorn -c gunicorn_cfg.py Sassy.wsgi```
