@@ -1,6 +1,7 @@
 from rest_framework import serializers
-from .models import Device, Activity, Scan
+from .models import Device, Activity, Scan, Card
 from django.contrib.auth.models import User
+
 
 class DeviceSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -11,7 +12,7 @@ class DeviceSerializer(serializers.HyperlinkedModelSerializer):
 class ActivitySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Activity
-        fields = ('device', 'url', 'owned_by', 'start_time', 'end_time')
+        fields = ('url', 'created_by', 'start_time', 'end_time')
 
 
 class ScanSerializer(serializers.HyperlinkedModelSerializer):
@@ -24,3 +25,9 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
         fields = ('url', 'username')
+
+
+class CardSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Card
+        fields = ('url', 'card_id')
