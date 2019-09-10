@@ -30,6 +30,13 @@ class Activity(models.Model):
         return self.name
 
 
+class Card(models.Model):
+    """
+    Holds data on Cards
+    """
+    card_id = models.CharField(max_length=25, null=False)
+
+
 class Scan(models.Model):
     """
     Holds a record of all scans
@@ -40,8 +47,3 @@ class Scan(models.Model):
     scan_time = models.DateTimeField(blank=True)
 
 
-class Card(models.Model):
-    """
-    Holds data on Cards
-    """
-    card_id = models.CharField(max_length=25, null=False)
