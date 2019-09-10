@@ -5,6 +5,9 @@ import django
 
 
 class Device(models.Model):
+    """
+    Keeps track of devices
+    """
     id = models.CharField(max_length=20, primary_key=True)
     owned_by = models.ForeignKey(User, on_delete=SET_NULL, null=True)
 
@@ -28,7 +31,17 @@ class Activity(models.Model):
 
 
 class Scan(models.Model):
+    """
+    Holds a record of all scans
+    """
     device = models.ForeignKey(Device, on_delete=SET_NULL, null=True, blank=True)
     activity = models.ForeignKey(Activity, on_delete=SET_NULL, null=True)
-    user = models.ForeignKey(User, on_delete=SET_NULL, null=True)
+    card = models.ForeignKey(Card, on_delete=SET_NULL, null=True)
     scan_time = models.DateTimeField(blank=True)
+
+
+class Card(models.Model):
+    """
+    Holds data on Cards
+    """
+    card_id = models.CharField(max_length=25, null=False)
