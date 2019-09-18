@@ -19,7 +19,9 @@ class Activity(models.Model):
         verbose_name_plural = "Activities"
 
     def __str__(self):
-        return self.name
+        if self.name is None:
+            return "NULLNAME"
+        return "{} - {}".format(self.name, self.description[:10])
 
 
 class Device(models.Model):

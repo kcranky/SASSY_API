@@ -21,7 +21,7 @@ class ActivitySerializer(serializers.HyperlinkedModelSerializer):
         user = request.user
         print(request.data)
         print(validated_data)
-        a = Activity.objects.create(description=validated_data['description'], start_time=validated_data['start_time'], end_time=validated_data['end_time'])
+        a = Activity.objects.create(name=validated_data['name'], description=validated_data['description'], start_time=validated_data['start_time'], end_time=validated_data['end_time'])
         a.created_by = user
         a.save()
         return a
