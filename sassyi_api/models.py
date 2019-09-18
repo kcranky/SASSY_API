@@ -21,7 +21,7 @@ class Activity(models.Model):
     def __str__(self):
         if self.name is None:
             return "NULLNAME"
-        return "{} - {}".format(self.name, self.description[:10])
+        return "{} - {}".format(self.name, self.description[:20])
 
 
 class Device(models.Model):
@@ -37,7 +37,7 @@ class Card(models.Model):
     """
     Holds data on Cards
     """
-    card_id = models.CharField(max_length=25, null=False)
+    card_id = models.CharField(max_length=25, null=False, primary_key=True)
 
 
 class Scan(models.Model):
