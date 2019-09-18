@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from rest_framework import viewsets
 from .models import Device, Activity, Scan, User, Card
 from .serializers import DeviceSerializer, ActivitySerializer, ScanSerializer, UserSerializer, CardSerializer

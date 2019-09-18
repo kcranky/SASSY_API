@@ -4,14 +4,6 @@ from django.db.models import SET_NULL
 import django
 
 
-class Device(models.Model):
-    """
-    Keeps track of devices
-    """
-    id = models.CharField(max_length=20, primary_key=True)
-    owned_by = models.ForeignKey(User, on_delete=SET_NULL, null=True)
-
-
 class Activity(models.Model):
     """
     An can have occur once (at an instant - i.e. only have a start time)
@@ -20,7 +12,7 @@ class Activity(models.Model):
     name = models.CharField(max_length=15, null=True)
     description = models.TextField(null=True)
     created_by = models.ForeignKey(User, on_delete=SET_NULL, null=True)
-    start_time = models.DateTimeField(default=django.utils.timezone.now())
+    start_time = models.DateTimeField()
     end_time = models.DateTimeField(null=True, blank=True)
 
     class Meta:
@@ -28,6 +20,15 @@ class Activity(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Device(models.Model):
+    """
+    Keeps track of devices
+    """
+    id = models.CharField(max_length=20, primary_key=True)
+    owned_by = models.ForeignKey(User, on_delete=SET_NULL, null=True)
+    current_activity = models.ForeignKey(Activity, on_delete=SET_NULL, null=True)
 
 
 class Card(models.Model):
