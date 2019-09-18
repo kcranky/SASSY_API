@@ -37,7 +37,7 @@ class Card(models.Model):
     """
     Holds data on Cards
     """
-    card_id = models.CharField(max_length=25, null=False, primary_key=True)
+    card_id = models.CharField(max_length=25, null=False, unique=True)
 
 
 class Scan(models.Model):
@@ -47,6 +47,6 @@ class Scan(models.Model):
     device = models.ForeignKey(Device, on_delete=SET_NULL, null=True, blank=True)
     activity = models.ForeignKey(Activity, on_delete=SET_NULL, null=True)
     card = models.ForeignKey(Card, on_delete=SET_NULL, null=True)
-    scan_time = models.DateTimeField(blank=True)
+    scan_time = models.DateTimeField(blank=True, null=True)
 
 

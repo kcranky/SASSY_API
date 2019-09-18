@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 class DeviceSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Device
-        fields = ('id', 'current_activity', 'url')
+        fields = ('id', 'current_activity', 'owned_by', 'url')
 
 
 class ActivitySerializer(serializers.HyperlinkedModelSerializer):
@@ -30,7 +30,18 @@ class ActivitySerializer(serializers.HyperlinkedModelSerializer):
 class ScanSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Scan
-        fields = ('device', 'url', 'activity', 'scan_time')
+        fields = ('device', 'url', 'activity', 'card', 'scan_time')
+
+    def create(self, validated_data):
+        scan, created = Scan.objects.update_or_create(
+            activity=validated_data.get('activity', None), card=validated_data.get('card', None),
+            defaults={
+                'device': validated_data.get('device', None),
+                'activity': validated_data.get('activity', None),
+                'card': validated_data.get('card', None),
+                'scan_time': validated_data.get('scan_time', None),
+            })
+        return scan
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
