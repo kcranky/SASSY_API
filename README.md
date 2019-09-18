@@ -98,3 +98,25 @@ The API is hosted on a server.
     sudo service nginx restart
     ```
 9) Enter back into ```/webapps/sassy``` and run ```gunicorn -c gunicorn_cfg.py Sassy.wsgi```
+
+## Resetting the DB
+It shouldn't happen, but sometimes migrations become irrecoverable. Run the following:  
+- drop the db and create it again
+    ```
+    sudo su - postgres
+    psql
+    drop database <sassy_db>;
+    CREATE DATABASE <sassy_db>;
+    GRANT ALL PRIVILEGES ON DATABASE <sassy_db> TO <username>;
+    \q
+    exit
+    ```
+- Delete all migrations 
+    ```
+    find . -path "*/migrations/*.py" -not -name "__init__.py" -delete
+    find . -path "*/migrations/*.pyc"  -delete
+    pip install --upgrade --force-reinstall  Django
+    ```
+- Make and Run migrations
+- Create a new superuser
+    
