@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Device, Activity, Scan, Card
+from .models import Device, Activity, Scan, Card, Profile
 from django.contrib.auth.models import User
 
 
@@ -44,10 +44,43 @@ class ScanSerializer(serializers.HyperlinkedModelSerializer):
         return scan
 
 
+class ProfileSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Profile
+        fields = ('card',)
+
+
 class UserSerializer(serializers.HyperlinkedModelSerializer):
+    profile = ProfileSerializer(required=True)
+
     class Meta:
         model = User
-        fields = ('url', 'username')
+        fields = ('url', 'username', 'profile')
+
+    def create(self, validated_data):
+        profile_data = validated_data.pop('profile')
+        user = User.objects.create(**validated_data)
+        Profile.objects.create(user=user, **profile_data) # Already have a signal to do this?? Try get_or_create ?
+        return user
+
+    def update(self, instance, validated_data):
+        # Update the  instance
+        profile_data = validated_data.pop('profile')
+        print(profile_data)
+        # first check if a profile exists, if not create one.
+        profile = instance.profile
+        print("hooray!")
+        instance.username = validated_data.get('username', instance.username)
+        instance.email = validated_data.get('email', instance.email)
+        instance.save()
+        print("hooray!")
+        profile.card = profile_data.get(
+            'card',
+            profile.card
+        )
+        profile.save()
+
+        return instance
 
 
 class CardSerializer(serializers.HyperlinkedModelSerializer):
