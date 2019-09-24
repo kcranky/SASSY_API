@@ -9,18 +9,17 @@ class DeviceSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('id', 'current_activity', 'owned_by', 'url')
 
 
-class ActivitySerializer(serializers.HyperlinkedModelSerializer):
+class ActivitySerializer(serializers.ModelSerializer):
     created_by = serializers.URLField(read_only=True)
 
     class Meta:
         model = Activity
-        fields = ('url', 'name', 'created_by', 'description', 'start_time', 'end_time')
+        #fields = ('url', 'name', 'created_by', 'description', 'start_time', 'end_time')
+        fields = '__all__'
 
     def create(self, validated_data):
         request = self.context['request']
         user = request.user
-        print(request.data)
-        print(validated_data)
         a = Activity.objects.create(name=validated_data['name'], description=validated_data['description'], start_time=validated_data['start_time'], end_time=validated_data['end_time'])
         a.created_by = user
         a.save()
@@ -66,14 +65,11 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
     def update(self, instance, validated_data):
         # Update the  instance
         profile_data = validated_data.pop('profile')
-        print(profile_data)
         # first check if a profile exists, if not create one.
         profile = instance.profile
-        print("hooray!")
         instance.username = validated_data.get('username', instance.username)
         instance.email = validated_data.get('email', instance.email)
         instance.save()
-        print("hooray!")
         profile.card = profile_data.get(
             'card',
             profile.card
