@@ -56,7 +56,7 @@ class Profile(models.Model):
     Extends the "user"
     """
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    card = models.ForeignKey(Card, on_delete=SET_NULL, null=True)
+    card = models.OneToOneField(Card, on_delete=SET_NULL, null=True)
 
 
 # TODO: This code below serves the same function as

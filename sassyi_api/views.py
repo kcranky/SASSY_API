@@ -52,12 +52,16 @@ def get_staff_activities(request, card_id):
         elif data.count() > 1:
             activities = ActivitySerializer(data, many=True)
         elif data.count() == 0:
-            return Response({"message": "No events found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"message": "No events found",
+                             "username": user.username,
+                             "card_id": card_id},
+                            status=status.HTTP_404_NOT_FOUND)
 
         return Response({"message": "Hello, world!",
                          "username": user.username,
                          "activities": activities.data,
-                         "card_id": card_id})
+                         "card_id": card_id},
+                        status=status.HTTP_200_OK)
 
     except User.DoesNotExist:
         return Response({"message": "No user linked to card"}, status=status.HTTP_404_NOT_FOUND)

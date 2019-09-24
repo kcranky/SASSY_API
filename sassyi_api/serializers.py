@@ -54,7 +54,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = User
-        fields = ('url', 'username', 'profile')
+        fields = ('url', 'username', 'profile', 'is_staff')
 
     def create(self, validated_data):
         profile_data = validated_data.pop('profile')
@@ -69,6 +69,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         profile = instance.profile
         instance.username = validated_data.get('username', instance.username)
         instance.email = validated_data.get('email', instance.email)
+        instance.is_staff = validated_data.get('is_staff', instance.is_staff)
         instance.save()
         profile.card = profile_data.get(
             'card',
