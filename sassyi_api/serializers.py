@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Device, Activity, Scan, Card, Profile
 from django.contrib.auth.models import User
+from datetime import datetime
 
 
 class DeviceSerializer(serializers.HyperlinkedModelSerializer):
@@ -9,12 +10,22 @@ class DeviceSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('id', 'current_activity', 'owned_by', 'url')
 
 
+class CardSerializer(serializers.HyperlinkedModelSerializer):
+
+    class Meta:
+        model = Card
+        fields = '__all__'
+        extra_kwargs = {
+            'card_id': {'validators': []},
+        }
+
+
 class ActivitySerializer(serializers.ModelSerializer):
     created_by = serializers.URLField(read_only=True)
 
     class Meta:
         model = Activity
-        #fields = ('url', 'name', 'created_by', 'description', 'start_time', 'end_time')
+        # fields = ('url', 'name', 'created_by', 'description', 'start_time', 'end_time')
         fields = '__all__'
 
     def create(self, validated_data):
@@ -27,18 +38,23 @@ class ActivitySerializer(serializers.ModelSerializer):
 
 
 class ScanSerializer(serializers.HyperlinkedModelSerializer):
+    card = CardSerializer()
+
     class Meta:
         model = Scan
         fields = ('device', 'url', 'activity', 'card', 'scan_time')
 
     def create(self, validated_data):
+        card_data = validated_data.pop('card')
+        card, created = Card.objects.get_or_create(**card_data)
+        print(card)
         scan, created = Scan.objects.update_or_create(
-            activity=validated_data.get('activity', None), card=validated_data.get('card', None),
+            activity=validated_data.get('activity', None), card=card,
             defaults={
                 'device': validated_data.get('device', None),
                 'activity': validated_data.get('activity', None),
-                'card': validated_data.get('card', None),
-                'scan_time': validated_data.get('scan_time', None),
+                'card': card,
+                'scan_time': datetime.now(),
             })
         return scan
 
@@ -80,7 +96,4 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         return instance
 
 
-class CardSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Card
-        fields = '__all__'
+
