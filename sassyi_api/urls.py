@@ -10,5 +10,6 @@ router.register('cards', views.CardView)
 router.register(r'users', views.UserViewSet, basename='user')
 
 urlpatterns = [
-    path('', include(router.urls))
+    path('', include(router.urls)),
+    path('get_staff_activities/<slug:card_id>', views.get_staff_activities, name='test')
 ]

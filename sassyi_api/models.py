@@ -1,7 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import SET_NULL
-import django
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 class Activity(models.Model):
@@ -50,3 +51,26 @@ class Scan(models.Model):
     scan_time = models.DateTimeField(blank=True, null=True)
 
 
+class Profile(models.Model):
+    """
+    Extends the "user"
+    """
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    card = models.OneToOneField(Card, on_delete=SET_NULL, null=True)
+
+
+# TODO: This code below serves the same function as
+# Profile.objects.create(user=user, **profile_data)
+# in the User serializer. I'm not sure which is better, so this is being left out for now and the
+# serializer used
+#
+#
+# @receiver(post_save, sender=User)
+# def create_user_profile(sender, instance, created, **kwargs):
+#     if created:
+#         Profile.objects.create(user=instance)
+#
+#
+# @receiver(post_save, sender=User)
+# def save_user_profile(sender, instance, **kwargs):
+#     instance.profile.save()
