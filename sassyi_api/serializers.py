@@ -75,7 +75,9 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
     def create(self, validated_data):
         profile_data = validated_data.pop('profile')
         user = User.objects.create(**validated_data)
-        Profile.objects.get_or_create(user=user, **profile_data) # Already have a signal to do this?? Try get_or_create ?
+        profile, created = Profile.objects.get_or_create(user=user, **profile_data) # Already have a signal to do this?? Try get_or_create ?
+        if created:
+            profile.save()
         return user
 
     def update(self, instance, validated_data):
