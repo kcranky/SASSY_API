@@ -7,7 +7,7 @@ from django.dispatch import receiver
 
 class Activity(models.Model):
     """
-    An can have occur once (at an instant - i.e. only have a start time)
+    An activity can occur once (at an instant - i.e. only have a start time)
     It can occur over a duration (have a start and end time)
     """
     name = models.CharField(max_length=15, null=True)
@@ -36,7 +36,8 @@ class Device(models.Model):
 
 class Card(models.Model):
     """
-    Holds data on Cards
+    Holds data on cards
+    It is assumed this data will be able to be parsed by an ICTS API call
     """
     card_id = models.CharField(max_length=25, null=False, unique=True)
 
@@ -44,6 +45,7 @@ class Card(models.Model):
 class Scan(models.Model):
     """
     Holds a record of all scans
+    Scans assume a card, device, activity and time
     """
     device = models.ForeignKey(Device, on_delete=SET_NULL, null=True, blank=True)
     activity = models.ForeignKey(Activity, on_delete=SET_NULL, null=True)
@@ -53,24 +55,7 @@ class Scan(models.Model):
 
 class Profile(models.Model):
     """
-    Extends the "user"
+    Extends the "user" by adding a linked card
     """
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     card = models.OneToOneField(Card, on_delete=SET_NULL, null=True)
-
-
-# TODO: This code below serves the same function as
-# Profile.objects.create(user=user, **profile_data)
-# in the User serializer. I'm not sure which is better, so this is being left out for now and the
-# serializer used
-#
-#
-# @receiver(post_save, sender=User)
-# def create_user_profile(sender, instance, created, **kwargs):
-#     if created:
-#         Profile.objects.create(user=instance)
-#
-#
-# @receiver(post_save, sender=User)
-# def save_user_profile(sender, instance, **kwargs):
-#     instance.profile.save()
